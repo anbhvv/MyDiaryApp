@@ -52,13 +52,14 @@ namespace daylio
             if (isUserExists())
                 return;
 
-
-
+        
             DB db = new DB();
             MySqlCommand command = new MySqlCommand("INSERT INTO `users` (`login`, `pass`, `name`, `info`) VALUES (@login, @pass, @username, @info)", db.getConnection());
 
+            
+
             command.Parameters.Add("@login", MySqlDbType.VarChar).Value = loginField.Text;
-            command.Parameters.Add("@pass", MySqlDbType.VarChar).Value = passField.Text;
+            command.Parameters.Add("@pass", MySqlDbType.VarChar).Value = HashPassword(passField.Text);
             command.Parameters.Add("@username", MySqlDbType.VarChar).Value = userNameField.Text;
             command.Parameters.Add("@info", MySqlDbType.VarChar).Value = phonemailField.Text;
 
@@ -97,6 +98,13 @@ namespace daylio
                 return false;
 
         }
+
+        private static string HashPassword(string password)
+        {
+            byte[] hashedBytes = System.Security.Cryptography.SHA256.Create().ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+        }
+
 
         private void registerLabel_Click(object sender, EventArgs e)
         {
